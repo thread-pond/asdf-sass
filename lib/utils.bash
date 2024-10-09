@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for sass.
 GH_REPO="https://github.com/sass/dart-sass"
 TOOL_NAME="sass"
 TOOL_TEST="sass --version"
@@ -27,22 +26,34 @@ sort_versions() {
 list_github_tags() {
 	git ls-remote --tags --refs "$GH_REPO" |
 		grep -o 'refs/tags/.*' | cut -d/ -f3- |
-		sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+		grep -v sass | sed 's/^v//'
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if sass has other means of determining installable versions.
 	list_github_tags
 }
 
 download_release() {
-	local version filename url
+	local version filename os arch url
 	version="$1"
 	filename="$2"
 
-	# TODO: Adapt the release URL convention for sass
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	case "$(uname -s)" in
+	*Darwin*) os="macos" ;;
+	*Linux*) os="linux" ;;
+	*Windows*) os="windows" ;;
+	*) fail "Could not detect operation system" ;;
+	esac
+
+	case "$(uname -m)" in
+	*arm64*) arch="arm64" ;;
+	*arm*) arch="arm" ;;
+	*ia32*) arch="ia32" ;;
+	*x86_64*) arch="x64" ;;
+	*) fail "Could not detect architecture" ;;
+	esac
+
+	url="$GH_REPO/releases/download/${version}/dart-sass-${version}-${os}-${arch}.tar.gz"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -61,7 +72,6 @@ install_version() {
 		mkdir -p "$install_path"
 		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-		# TODO: Assert sass executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
