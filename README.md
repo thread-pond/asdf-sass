@@ -2,7 +2,7 @@
 
 # asdf-sass [![Build](https://github.com/thread-pond/asdf-sass/actions/workflows/build.yml/badge.svg)](https://github.com/thread-pond/asdf-sass/actions/workflows/build.yml) [![Lint](https://github.com/thread-pond/asdf-sass/actions/workflows/lint.yml/badge.svg)](https://github.com/thread-pond/asdf-sass/actions/workflows/lint.yml)
 
-[sass](https://github.com/thread-pond/sass) plugin for the [asdf version manager](https://asdf-vm.com).
+[sass](https://github.com/sass/dart-sass) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
 
